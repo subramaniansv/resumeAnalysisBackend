@@ -11,11 +11,21 @@ const PORT = process.env.PORT || 5000;
 connectDb();
 
 app.use(express.json());
-app.use(cors(
-  {origin:"http://localhost:5173",
-    credentials:true,
-  }
-));
+const allowedOrigins = [
+  "http://localhost:5173", // Local Development
+  "https://resume-ebon-eta.vercel.app" // Deployed Frontend
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 
 // API Endpoint
 app.use('/api/user',userRouter)
