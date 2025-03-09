@@ -302,16 +302,42 @@ const fetchUser = async (req,res) =>{
       
 }
 //fetch skill
-const fetchSkill = async (req,res)=>{
-    try {
-      const {skill} = req.body;
+const fetchSkill = async (req, res) => {
+  try {
+      const { skill, action, skillIndex, newSkill } = req.body;
       const user = await userModel.findById(req.params.id);
+      
       if (!user) return res.status(404).json({ message: 'User not found' });
-      user.skills.push(skill);
+
+      switch (action) {
+          case "add":
+              user.skills.push(skill);
+              break;
+
+          case "edit":
+              if (skillIndex < 0 || skillIndex >= user.skills.length) {
+                  return res.status(400).json({ message: "Invalid skill index" });
+              }
+              user.skills[skillIndex] = newSkill;
+              break;
+
+          case "delete":
+              if (skillIndex < 0 || skillIndex >= user.skills.length) {
+                  return res.status(400).json({ message: "Invalid skill index" });
+              }
+              user.skills.splice(skillIndex, 1);
+              break;
+
+          default:
+              return res.status(400).json({ message: "Invalid action" });
+      }
+
       await user.save();
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: 'Server Error', error: err.message });
-    }
-}
+      res.json({ message: "Operation successful", skills: user.skills });
+
+  } catch (error) {
+      res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = { registerUser, loginUser,googleAuth, googleAuthCallback, uploadResume, fetchJobs ,searchJobs,fetchUser,fetchSkill};
