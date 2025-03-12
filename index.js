@@ -13,7 +13,8 @@ connectDb();
 app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173", // Local Development
-  "https://resume-ebon-eta.vercel.app" // Deployed Frontend
+  "https://resume-ebon-eta.vercel.app",
+  "https://resumeanalysis-beryl.vercel.app"// Deployed Frontend
 ];
 
 app.use(cors({
